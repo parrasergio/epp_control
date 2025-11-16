@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Mi Perfil{% endblock %}
+
+{% block content %}
+    <h2>Gestión de Mi Perfil</h2>
+
+    <fieldset>
+        <legend>Modificar Datos de Cuenta</legend>
+        <div class="form-horizontal">
+            <label for="username">Nombre de Usuario:</label>
+            <input type="text" id="username" value="{{ user.username }}" required>
+            
+            <label for="password">Nueva Contraseña:</label>
+            <input type="password" id="password" placeholder="Dejar vacío si no se cambia">
+            
+            <button onclick="updateProfile()">GUARDAR CAMBIOS</button>
+        </div>
+    </fieldset>
+
+    <script>
+        async function updateProfile() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            const response = await fetch('/api/usuario/update-profile', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username, password }),
+            });
+            const data = await response.json();
+
+            if (data.status === 'ok') {
+                alert(data.mensaje);
+                // Opcional: Redirigir al inicio o recargar la página
+                window.location.reload(); 
+            } else {
+                alert(`Error: ${data.mensaje}`);
+            }
+        }
+    </script>
+{% endblock %}

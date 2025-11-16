@@ -1,0 +1,12 @@
+<!-- Le decimos a Jinja que use nuestra plantilla base.html como esqueleto -->
+{% extends "base.html" %}
+
+<!-- Definimos el título específico de esta página -->
+{% block title %}Inicio{% endblock %}
+
+<!-- Definimos el contenido específico que irá en el bloque 'content' de la base -->
+{% block content %}
+    <h2>Bienvenido al Sistema de Gestión de EPP</h2>
+    <p>Utiliza el menú superior para navegar por las diferentes secciones de la aplicación.</p>
+{% endblock %}
+

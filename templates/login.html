@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Iniciar Sesión{% endblock %}
+
+{% block content %}
+    <h2>Iniciar Sesión en ControlEPP Web</h2>
+    
+    <!-- Muestra mensajes flash de Flask (ej. errores de login) -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div style="color: {{ 'red' if category == 'error' else 'green' }};">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+   <form method="POST" action="{{ url_for('main_bp.login') }}">
+
+        <div>
+            <label for="username">Usuario:</label>
+            <input type="text" id="username" name="username" required>
+        </div>
+        <br>
+        <div>
+            <label for="password">Contraseña:</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+        <br>
+        <button type="submit">Iniciar Sesión</button>
+    </form>
+{% endblock %}

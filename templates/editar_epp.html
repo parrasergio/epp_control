@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Editar EPP{% endblock %}
+
+{% block content %}
+    <h2>Editar Equipo de Protección Personal: {{ epp.nombre }}</h2>
+
+    <!-- El formulario se envía de vuelta a la misma URL usando POST -->
+    <form method="POST">
+        <fieldset>
+            <legend>Datos del EPP</legend>
+
+            <div>
+                <label for="codigo">Código:</label>
+                <!-- El valor inicial del campo es el valor actual del EPP -->
+                <input type="text" id="codigo" name="codigo" value="{{ epp.codigo }}" required>
+            </div>
+            
+            <div>
+                <label for="nombre">Nombre:</label>
+                <input type="text" id="nombre" name="nombre" value="{{ epp.nombre }}" required>
+            </div>
+            
+            <div>
+                <label for="stock">Stock:</label>
+                <input type="number" id="stock" name="stock" value="{{ epp.stock }}" min="0" required>
+            </div>
+            
+            <div>
+                <button type="submit">Guardar Cambios</button>
+                <!-- Botón para volver atrás sin guardar -->
+                <a href="{{ url_for('main_bp.gestion_epp') }}">Cancelar</a>
+            </div>
+        </fieldset>
+    </form>
+
+    <!-- Script simple para mostrar mensajes flash de Flask si los hay -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+    
+{% endblock %}

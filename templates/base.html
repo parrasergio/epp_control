@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><Idumentaria_BVRoca class=""></Idumentaria_BVRoca> - {% block title %}{% endblock %}</title>
+    
+    <!-- Este es el único enlace CSS, en la única sección head válida -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    
+    <div class="main-background"></div> <!-- Imagen de fondo semitransparente -->
+
+    <header>
+        <!-- AQUI ESTÁ EL LOGO Y EL TÍTULO -->
+        <div style="display: flex; align-items: center;">
+            <!-- SE AÑADE LA CLASE 'logo-header' A LA IMAGEN -->
+            <img src="{{ url_for('static', filename='logo_bomberos.png') }}" alt="Logo Bomberos Voluntarios" class="logo-header" style="height: 50px; margin-right: 15px;">
+            <h1>ControlEPP Web</h1>
+        </div>
+        <nav>
+            <!-- Todas las url_for() apuntan al blueprint 'main_bp' -->
+            <a href="{{ url_for('main_bp.home') }}">Inicio</a> | 
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('main_bp.entregas_epp') }}">Entregas EPP</a> |
+                <!-- Enlaces a las páginas de gestión -->
+                <a href="{{ url_for('main_bp.gestion_personal') }}">Gestión Personal</a> |
+                <a href="{{ url_for('main_bp.gestion_epp') }}">Gestión EPP</a> |
+                <!-- AÑADE ESTA LÍNEA para la gestión de usuarios -->
+                <a href="{{ url_for('main_bp.gestion_usuarios') }}">Gestión Usuarios</a> |
+                
+                <span>Hola, {{ current_user.username }}</span> |
+                <!-- CAMBIO REALIZADO: Ahora apunta a user_profile -->
+                <a href="{{ url_for('main_bp.user_profile') }}">Perfil</a> |
+                <a href="{{ url_for('main_bp.logout') }}">Cerrar Sesión</a>
+            {% else %}
+                <a href="{{ url_for('main_bp.login') }}">Iniciar Sesión</a>
+            {% endif %}
+        </nav>
+    </header>
+
+    <div class="search-bar">
+    </div>
+    
+    <hr>
+    <main>
+        <!-- Aquí se insertará el contenido de las otras plantillas -->
+        {% block content %}{% endblock %}
+    </main>
+    <hr>
+    <footer>
+        <p>&copy; 2025 ControlEPP Web</p>
+    </footer>
+</body>
+</html>
+

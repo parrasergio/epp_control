@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Gestión de Usuarios{% endblock %}
+
+{% block content %}
+    <h2>Gestión de Usuarios del Sistema</h2>
+
+    <div class="container">
+        <!-- Parte Izquierda (Formularios de Acción) -->
+        <div class="left-panel">
+            <fieldset>
+                <legend>Añadir Nuevo Usuario</legend>
+                <!-- Usamos nuestra clase horizontal definida en styles.css -->
+                <div class="form-horizontal">
+                    <label for="new_username">Usuario:</label>
+                    <input type="text" id="new_username" required>
+                    <label for="new_password">Contraseña:</label>
+                    <input type="password" id="new_password" required>
+                    
+                    <!-- AÑADIMOS LA OPCIÓN DE ADMINISTRADOR -->
+                    <label for="new_is_admin" style="display: inline; margin-left: 10px;">Es Administrador:</label>
+                    <input type="checkbox" id="new_is_admin" style="width: auto;">
+                    
+                    <button onclick="addUser()">Crear Usuario</button>
+                </div>
+            </fieldset>
+            
+            <fieldset>
+                <legend>Modificar Contraseña Existente (Admin)</legend>
+                <!-- Usamos nuestra clase horizontal definida en styles.css -->
+                <div class="form-horizontal">
+                    <!-- Se selecciona de la lista en lugar de poner el ID manualmente -->
+                    <label for="edit_user_id">Seleccionar Usuario:</label>
+                    <select id="edit_user_id"></select>
+                    
+                    <label for="edit_password">Nueva Contraseña:</label>
+                    <input type="password" id="edit_password" required>
+                    <button onclick="changePassword()">Modificar Contraseña</button>
+                </div>
+            </fieldset>
+        </div>
+
+        <!-- Parte Derecha (Listado de Usuarios) -->
+        <div class="right-panel">
+            <fieldset>
+                <legend>Listado de Usuarios</legend>
+                <table id="usuarios-tabla">
+                    <thead>
+                        <tr>
+                            <th>Usuario</th>
+                            <th>Acciones</th> 
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Los datos se cargarán con JavaScript. -->
+                    </tbody>
+                </table>
+            </fieldset>
+        </div>
+    </div>
+    <!-- Enlazamos el archivo JavaScript -->
+    <script src="{{ url_for('static', filename='js/gestionUsuarios.js') }}"></script>
+{% endblock %}

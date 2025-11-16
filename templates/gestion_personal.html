@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Gestión Personal{% endblock %}
+
+{% block content %}
+    <h2>Gestión de Bomberos y Personal</h2>
+
+    <!-- Fieldset para Añadir Nuevo Personal (asumo que ya existe) -->
+    <fieldset>
+        <legend>Añadir Nuevo Personal</legend>
+        <div class="form-horizontal">
+            <label for="new_legajo">Legajo:</label>
+            <input type="text" id="new_legajo">
+            <label for="new_nombre">Nombre:</label>
+            <input type="text" id="new_nombre">
+            <label for="new_apellido">Apellido:</label>
+            <input type="text" id="new_apellido">
+            <label for="new_jerarquia">Jerarquía:</label>
+            <input type="text" id="new_jerarquia">
+            <button onclick="addPersonal()">AÑADIR PERSONAL</button>
+        </div>
+    </fieldset>
+
+    <!-- Fieldset para Modificar Datos de Personal -->
+    <fieldset>
+        <legend>Modificar Datos de Personal</legend>
+        <div class="form-horizontal">
+            <label for="edit_id">ID:</label>
+            <input type="number" id="edit_id" required>
+            <label for="edit_legajo">Legajo:</label>
+            <input type="text" id="edit_legajo" required>
+            <label for="edit_nombre">Nombre:</label>
+            <input type="text" id="edit_nombre" required>
+            <label for="edit_apellido">Apellido:</label>
+            <input type="text" id="edit_apellido" required>
+            <label for="edit_jerarquia">Jerarquía:</label>
+            <input type="text" id="edit_jerarquia" required>
+            <button onclick="updatePersonal()">GUARDAR CAMBIOS</button>
+        </div>
+    </fieldset>
+
+    <!-- Listado de Personal: ESTRUCTURA DE TABLA AÑADIDA -->
+    <fieldset>
+        <legend>Listado de Personal</legend>
+        <table id="personal-tabla">
+            <!-- Cabecera de la tabla -->
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Legajo</th>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Jerarquía</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <!-- Cuerpo de la tabla: El JavaScript insertará filas aquí -->
+            <tbody>
+                <!-- Las filas se añadirán dinámicamente con JavaScript -->
+            </tbody>
+        </table>
+    </fieldset>
+
+    <!-- AÑADIMOS UN SCRIPT INLINE PARA PASAR LOS PERMISOS AL JS EXTERNO -->
+    <script>
+        // Flask renderiza estas variables con los permisos del usuario logueado
+        const canDeletePersonal = {{ can_manage_personal_delete | tojson }};
+        const canUpdatePersonal = {{ can_manage_personal_update | tojson }};
+    </script>
+    
+    <!-- Enlace al archivo JavaScript para esta vista -->
+    <script src="{{ url_for('static', filename='js/gestion_personal.js') }}"></script>
+{% endblock %}

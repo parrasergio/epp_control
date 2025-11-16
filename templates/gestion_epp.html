@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Gestión de EPP{% endblock %}
+
+{% block content %}
+    <h2>Gestión de Equipos de Protección Personal (EPP)</h2>
+
+    <fieldset>
+        <legend>Añadir Nuevo EPP</legend>
+        <div>
+            <label for="codigo">Código:</label>
+            <input type="text" id="codigo" required>
+            <label for="nombre">Nombre:</label>
+            <input type="text" id="nombre" required>
+            <label for="stock">Stock Inicial:</label>
+            <input type="number" id="stock" value="0" min="0" required>
+            <button onclick="añadirEpp()">Añadir</button>
+        </div>
+    </fieldset>
+
+    <hr>
+
+    <h3>Listado de EPP</h3>
+
+    <!-- Botón para descargar el listado de stock (Añadido) -->
+    <div style="margin-bottom: 10px;">
+        <a href="{{ url_for('main_bp.api_stock_csv') }}" class="btn-exportar">
+            Descargar Listado de Stock (CSV)
+        </a>
+    </div>
+    
+    <table id="epp-tabla" border="1">
+        <thead>
+            <tr>
+                <th>Código</th>
+                <th>Nombre</th>
+                <th>Stock</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Los datos se cargarán con JavaScript -->
+        </tbody>
+    </table>
+
+    <!-- Enlazar nuestro archivo JavaScript -->
+    <script src="{{ url_for('static', filename='js/gestionEpp.js') }}"></script>
+
+{% endblock %}
