@@ -52,6 +52,7 @@ function seleccionarUsuarioParaCambio(userId, username) {
 function addUser() {
     const usernameInput = document.querySelector('#new_username');
     const passwordInput = document.querySelector('#new_password');
+
     // Captura el estado de la casilla de verificación (True o False)
     const isAdminCheckbox = document.querySelector('#new_is_admin'); 
 
