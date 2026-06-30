@@ -1,13 +1,13 @@
-# C:\Users\Sergio Parra\Desktop\ControlEPP_Web\app\models.py (COMPLETO Y FINAL con permisos)
-
 from sqlalchemy import Boolean, Column, Integer, String, ForeignKey, DateTime, Table
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.sql import func
 from app.db import Base
-from flask_login import UserMixin 
+from flask_login import UserMixin
 from werkzeug.security import check_password_hash, generate_password_hash
+from passlib.context import CryptContext
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
 
 # --- Tabla de asociación para la relación muchos-a-muchos entre Usuario y Role ---
 user_roles = Table('user_roles', Base.metadata,
