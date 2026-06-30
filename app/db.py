@@ -1,10 +1,13 @@
-# C:\Users\Sergio Parra\Desktop\ControlEPP_Web\app\db.py (COMPLETO Y FINAL con permisos)
-
+import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base 
 
-DATABASE_URL = "sqlite:///./epp_control.db"
+# Condición inteligente: Si detecta que está en Render, guarda en el disco persistente /data
+if os.path.exists('/data'):
+    DATABASE_URL = "sqlite:////data/epp_control.db"
+else:
+    DATABASE_URL = "sqlite:///./epp_control.db"
 
 engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -79,4 +82,3 @@ def init_db():
         session.rollback()
     finally:
         session.close()
-
