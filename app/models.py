@@ -5,7 +5,7 @@ from sqlalchemy.orm import relationship, backref
 from sqlalchemy.sql import func
 from app.db import Base
 from flask_login import UserMixin 
-from passlib.context import CryptContext 
+from werkzeug.security import check_password_hash, generate_password_hash
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -84,11 +84,11 @@ class Usuario(UserMixin, Base):
     roles = relationship("Role", secondary=user_roles, backref="usuarios", lazy='joined')
 
     def set_password(self, password):
-        self.password_hash = pwd_context.hash(password)
+        self.password_hash = generate_password_hash(password)
 
     def check_password(self, password):
-        return pwd_context.verify(password, self.password_hash)
-    
+        return check_password_hash(self.password_hash, password)
+
     def has_role(self, role_name):
         return any(role.name == role_name for role in self.roles)
 
