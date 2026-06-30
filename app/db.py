@@ -1,13 +1,9 @@
-import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base 
 
-# Condición inteligente: Si detecta que está en Render, guarda en el disco persistente /data
-if os.path.exists('/data'):
-    DATABASE_URL = "sqlite:////data/epp_control.db"
-else:
-    DATABASE_URL = "sqlite:///./epp_control.db"
+# Ruta estándar compatible con tu PC y estable en Railway
+DATABASE_URL = "sqlite:///./epp_control.db"
 
 engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
