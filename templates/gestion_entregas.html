@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Gestión de Entregas{% endblock %}
+
+{% block content %}
+    <h2>Gestión e Historial de Entregas Realizadas</h2>
+
+    <div class="container" style="display: block; max-width: 1000px; margin: 0 auto;">
+        <fieldset>
+            <legend>Buscar Historial del Bombero</legend>
+            <div class="form-horizontal" style="margin-bottom: 20px;">
+                <label for="legajo-gestion">Número de Legajo:</label>
+                <input type="text" id="legajo-gestion" placeholder="Ej: 253" required>
+                <button onclick="buscarHistorialGestion()" style="background-color: #007bff; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer;">BUSCAR HISTORIAL</button>
+            </div>
+            
+            <p><strong>Bombero Seleccionado:</strong> <span id="bombero-nombre-gestion">Ninguno</span></p>
+        </fieldset>
+
+        <br>
+
+        <fieldset>
+            <legend>Registros de Entregas</legend>
+            <table id="tabla-gestion-entregas" style="width: 100%; border-collapse: collapse; text-align: left;">
+                <thead>
+                    <tr style="background-color: #004085; color: white;">
+                        <th style="padding: 10px; border: 1px solid #ddd;">Fecha</th>
+                        <th style="padding: 10px; border: 1px solid #ddd;">EPP (Artículo)</th>
+                        <th style="padding: 10px; border: 1px solid #ddd;">Cantidad</th>
+                        <th style="padding: 10px; border: 1px solid #ddd;">Motivo</th>
+                        <th style="padding: 10px; border: 1px solid #ddd;">Aprobado por</th>
+                        <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Las filas con el botón de borrar se cargarán aquí con JavaScript -->
+                </tbody>
+            </table>
+        </fieldset>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/gestion_entregas.js') }}"></script>
+{% endblock %}

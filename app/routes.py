@@ -145,9 +145,10 @@ def api_buscar_bombero(legajo):
     finally:
         session.close()
 
-@main_bp.route('/api/buscar-epp/<codigo>', methods=['GET'])
+@main_bp.route('/api/buscar-epp', methods=['GET'])
 @login_required
-def api_buscar_epp(codigo):
+def api_buscar_epp():
+    codigo = request.args.get('codigo') # Lee el código de forma segura sin importar si tiene barras '/'
     session = SessionLocal()
     try:
         epp_item = session.query(EPP).filter_by(codigo=codigo).first()
@@ -155,6 +156,27 @@ def api_buscar_epp(codigo):
             return jsonify({'encontrado': True, 'nombre': epp_item.nombre, 'stock': epp_item.stock, 'id': epp_item.id})
         else:
             return jsonify({'encontrado': False, 'mensaje': f'No existe EPP con código {codigo}'})
+    finally:
+        session.close()
+
+@main_bp.route('/api/historial-bombero/<int:personal_id>', methods=['GET'])
+@login_required
+def api_historial_bombero(personal_id):
+    session = SessionLocal()
+    try:
+        entregas = session.query(Entrega).filter_by(personal_id=personal_id).all()
+        historial_data = []
+        for e in entregas:
+            historial_data.append({
+                'id': e.id,
+                'entrega_id': e.id,
+                'fecha': e.fecha.strftime('%d/%m/%Y') if hasattr(e.fecha, 'strftime') else str(e.fecha),
+                'epp_nombre': e.epp.nombre if e.epp else 'Desconocido',
+                'cantidad': e.cantidad,
+                'motivo': e.motivo,
+                'aprobado_por': e.aprobado_por
+            })
+        return jsonify(historial_data)
     finally:
         session.close()
 
@@ -435,6 +457,36 @@ def api_delete_user(user_id):
         session.delete(user)
         session.commit()
         return jsonify({'status': 'ok', 'mensaje': 'Usuario eliminado correctamente'})
+    except Exception as e:
+        session.rollback()
+        return jsonify({'status': 'error', 'mensaje': str(e)}), 500
+    finally:
+        session.close()
+
+@main_bp.route('/gestion_entregas')
+@login_required
+@permission_required('manage_epp_add') # Usa el permiso que ya tenés configurado
+def gestion_entregas():
+    return render_template('gestion_entregas.html')
+
+@main_bp.route('/api/eliminar-entrega/<int:entrega_id>', methods=['DELETE'])
+@login_required
+def api_eliminar_entrega(entrega_id):
+    session = SessionLocal()
+    try:
+        # Buscamos la entrega que queremos borrar
+        entrega = session.query(Entrega).get(entrega_id)
+        if not entrega:
+            return jsonify({'status': 'error', 'mensaje': 'Entrega no encontrada'}), 404
+        
+        # Devolvemos la cantidad entregada al stock del EPP correspondiente
+        if entrega.epp:
+            entrega.epp.stock += entrega.cantidad
+            
+        # Borramos el registro de la entrega
+        session.delete(entrega)
+        session.commit()
+        return jsonify({'status': 'ok', 'mensaje': 'Entrega eliminada y stock devuelto con éxito'})
     except Exception as e:
         session.rollback()
         return jsonify({'status': 'error', 'mensaje': str(e)}), 500

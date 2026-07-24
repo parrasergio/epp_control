@@ -8,7 +8,6 @@ let currentEppStock = 0;
 function limpiarTablaHistorial() {
     const tbody = document.querySelector('#historial-tabla tbody');
     tbody.innerHTML = '';
-    document.querySelector('button[onclick="imprimirHistorialCSV()"]').disabled = true;
 }
 
 function limpiarCamposEPP() {
@@ -30,6 +29,7 @@ async function buscarBombero() {
         alert("Ingrese un número de legajo.");
         return;
     }
+    // RUTA EXACTA: Coincide al 100% con la línea 135 de tu Python
     const response = await fetch(`/api/buscar-bombero/${legajo}`);
     const data = await response.json();
 
@@ -53,15 +53,15 @@ function limpiarCampos() {
     currentBomberoId = null;
     limpiarTablaHistorial();
     limpiarCamposEPP();
-}
-
+    }
 async function buscarEPP() {
     const codigo = document.getElementById('codigo-epp').value;
     if (!codigo) {
         alert("Ingrese código EPP");
         return;
     }
-    const response = await fetch(`/api/buscar-epp/${codigo}`);
+    // Enviamos el código limpio usando parámetros de consulta para que la barra '/' no rompa la ruta de Flask
+    const response = await fetch(`/api/buscar-epp?codigo=${encodeURIComponent(codigo)}`);
     const data = await response.json();
 
     if (data.encontrado) {
@@ -75,6 +75,7 @@ async function buscarEPP() {
     }
 }
 
+
 async function realizarEntrega() {
     if (!currentBomberoId) {
         alert("Primero debe buscar y seleccionar un bombero.");
@@ -84,7 +85,8 @@ async function realizarEntrega() {
         alert("Primero debe buscar y seleccionar un EPP.");
         return;
     }
-    
+ 
+   
     const cantidad = parseInt(document.getElementById('cantidad').value);
     const motivo = document.getElementById('motivo').value;
     const aprobado_por = document.getElementById('aprobado-por').value;
@@ -98,12 +100,10 @@ async function realizarEntrega() {
         alert("Stock insuficiente.");
         return;
     }
-
+    // RUTA EXACTA: Coincide con la ruta de tu backend para procesar la entrega
     const response = await fetch('/api/realizar-entrega', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
             personal_id: currentBomberoId,
             epp_id: currentEppId,
@@ -116,24 +116,22 @@ async function realizarEntrega() {
 
     if (data.status === 'ok') {
         alert(data.mensaje);
-        // Actualizar stock en la UI
         document.getElementById('stock-lbl').textContent = data.nuevo_stock;
         currentEppStock = data.nuevo_stock;
-        // Recargar el historial para reflejar la nueva entrega
         cargarHistorial(currentBomberoId);
-        // Limpiar campos de entrega excepto el bombero actual
         limpiarCamposEPP(); 
-        document.getElementById('aprobado-por').value = ''; // Mantener este campo limpio para la próxima entrega
+        document.getElementById('aprobado-por').value = '';
     } else {
         alert(`Error: ${data.mensaje}`);
     }
 }
 
 async function cargarHistorial(personal_id) {
+    // RUTA EXACTA: Coincide con tu ruta de Python para leer el historial de entregas
     const response = await fetch(`/api/historial-bombero/${personal_id}`);
     const historial = await response.json();
     const tbody = document.querySelector('#historial-tabla tbody');
-    tbody.innerHTML = ''; // Limpiar tabla antes de cargar datos nuevos
+    tbody.innerHTML = ''; 
 
     historial.forEach(item => {
         const row = tbody.insertRow();
@@ -143,14 +141,34 @@ async function cargarHistorial(personal_id) {
         row.insertCell(3).textContent = item.motivo;
         row.insertCell(4).textContent = item.aprobado_por;
     });
-
-    document.querySelector('button[onclick="imprimirHistorialCSV()"]').disabled = historial.length === 0;
-}
-
-function imprimirHistorialCSV() {
-    if (currentBomberoId) {
-        // Al hacer clic en el botón, el navegador descarga el archivo de la API
-        window.location.href = `/api/historial-csv/${currentBomberoId}`;
     }
-}
 
+// TU BOTÓN ORIGINAL: Genera y descarga el CSV directo con lo que ves cargado en la tabla
+function imprimirHistorialCSV() {
+    let tabla = document.getElementById("historial-tabla");
+    let filas = tabla.querySelectorAll("tbody tr");
+    
+    if (filas.length === 0) {
+        alert("No hay datos en el historial para exportar.");
+        return;
+    }
+
+    // Usamos punto y coma (;) para que Excel en español lo ordene en columnas
+    let contenidoCSV = "data:text/csv;charset=utf-8,Fecha;EPP;Cantidad;Motivo;Aprobado por\n";
+
+    filas.forEach(f => {
+        let columnas = f.querySelectorAll("td");
+        if(columnas.length > 0) {
+            let filaTexto = Array.from(columnas).map(c => `"${c.innerText.replace(/"/g, '""')}"`).join(";");
+            contenidoCSV += filaTexto + "\n";
+        }
+    });
+
+    let encodedUri = encodeURI(contenidoCSV);
+    let link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "historial_entregas.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
