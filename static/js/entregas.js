@@ -29,7 +29,6 @@ async function buscarBombero() {
         alert("Ingrese un número de legajo.");
         return;
     }
-    // RUTA EXACTA: Coincide al 100% con la línea 135 de tu Python
     const response = await fetch(`/api/buscar-bombero/${legajo}`);
     const data = await response.json();
 
@@ -38,7 +37,7 @@ async function buscarBombero() {
         document.getElementById('apellido-lbl').textContent = data.apellido;
         document.getElementById('jerarquia-lbl').textContent = data.jerarquia;
         currentBomberoId = data.id;
-        cargarHistorial(data.id); // Cargar historial automáticamente al encontrar
+        cargarHistorial(data.id); 
     } else {
         alert(data.mensaje);
         limpiarCampos();
@@ -53,14 +52,14 @@ function limpiarCampos() {
     currentBomberoId = null;
     limpiarTablaHistorial();
     limpiarCamposEPP();
-    }
+}
+
 async function buscarEPP() {
     const codigo = document.getElementById('codigo-epp').value;
     if (!codigo) {
         alert("Ingrese código EPP");
         return;
     }
-    // Enviamos el código limpio usando parámetros de consulta para que la barra '/' no rompa la ruta de Flask
     const response = await fetch(`/api/buscar-epp?codigo=${encodeURIComponent(codigo)}`);
     const data = await response.json();
 
@@ -75,7 +74,6 @@ async function buscarEPP() {
     }
 }
 
-
 async function realizarEntrega() {
     if (!currentBomberoId) {
         alert("Primero debe buscar y seleccionar un bombero.");
@@ -86,7 +84,6 @@ async function realizarEntrega() {
         return;
     }
  
-   
     const cantidad = parseInt(document.getElementById('cantidad').value);
     const motivo = document.getElementById('motivo').value;
     const aprobado_por = document.getElementById('aprobado-por').value;
@@ -100,7 +97,7 @@ async function realizarEntrega() {
         alert("Stock insuficiente.");
         return;
     }
-    // RUTA EXACTA: Coincide con la ruta de tu backend para procesar la entrega
+    
     const response = await fetch('/api/realizar-entrega', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -127,7 +124,6 @@ async function realizarEntrega() {
 }
 
 async function cargarHistorial(personal_id) {
-    // RUTA EXACTA: Coincide con tu ruta de Python para leer el historial de entregas
     const response = await fetch(`/api/historial-bombero/${personal_id}`);
     const historial = await response.json();
     const tbody = document.querySelector('#historial-tabla tbody');
@@ -137,13 +133,15 @@ async function cargarHistorial(personal_id) {
         const row = tbody.insertRow();
         row.insertCell(0).textContent = item.fecha;
         row.insertCell(1).textContent = item.epp_nombre;
-        row.insertCell(2).textContent = item.cantidad;
-        row.insertCell(3).textContent = item.motivo;
-        row.insertCell(4).textContent = item.aprobado_por;
+        // CAMBIO NATIVO: Insertamos la marca en la columna 2 leyendo lo que envía Flask desde la BD
+        row.insertCell(2).textContent = item.marca || 'Sin especificar';
+        row.insertCell(3).textContent = item.cantidad;
+        row.insertCell(4).textContent = item.motivo;
+        row.insertCell(5).textContent = item.aprobado_por;
     });
-    }
+}
 
-// TU BOTÓN ORIGINAL: Genera y descarga el CSV directo con lo que ves cargado en la tabla
+// CAMBIO NATIVO: Genera el CSV con la columna Marca y autojustifica las celdas para Excel
 function imprimirHistorialCSV() {
     let tabla = document.getElementById("historial-tabla");
     let filas = tabla.querySelectorAll("tbody tr");
@@ -153,8 +151,8 @@ function imprimirHistorialCSV() {
         return;
     }
 
-    // Usamos punto y coma (;) para que Excel en español lo ordene en columnas
-    let contenidoCSV = "data:text/csv;charset=utf-8,Fecha;EPP;Cantidad;Motivo;Aprobado por\n";
+    // TRUCO PROFESIONAL: "sep=;" le avisa a Excel que autoajuste y separe las columnas de forma nativa al abrirlo
+    let contenidoCSV = "sep=;\nFecha;EPP;Marca;Cantidad;Motivo;Aprobado por\n";
 
     filas.forEach(f => {
         let columnas = f.querySelectorAll("td");
@@ -164,9 +162,12 @@ function imprimirHistorialCSV() {
         }
     });
 
-    let encodedUri = encodeURI(contenidoCSV);
+    // Usamos Blob con codificación UTF-8 con BOM para que Excel reconozca epp con tildes y caracteres especiales sin romperse
+    let blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), contenidoCSV], { type: "text/csv;charset=utf-8;" });
     let link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
+    let url = URL.createObjectURL(blob);
+    
+    link.setAttribute("href", url);
     link.setAttribute("download", "historial_entregas.csv");
     document.body.appendChild(link);
     link.click();

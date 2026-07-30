@@ -20,6 +20,12 @@
                 <label for="nombre">Nombre:</label>
                 <input type="text" id="nombre" name="nombre" value="{{ epp.nombre }}" required>
             </div>
+
+            <!-- CAMBIO NATIVO: Campo Marca agregado para interactuar con la Base de Datos -->
+            <div>
+                <label for="marca">Marca:</label>
+                <input type="text" id="marca" name="marca" value="{{ epp.marca or '' }}" placeholder="Ej: 3M, MSA...">
+            </div>
             
             <div>
                 <label for="stock">Stock:</label>

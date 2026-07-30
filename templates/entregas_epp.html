@@ -10,7 +10,6 @@
         <div class="left-panel">
             <fieldset>
                 <legend>Datos del BOMBERO</legend>
-                <!-- Aplicación de la clase form-horizontal -->
                 <div class="form-horizontal">
                     <label for="legajo">Legajo:</label>
                     <input type="text" id="legajo" required>
@@ -24,7 +23,6 @@
 
             <fieldset>
                 <legend>Entrega de EPP</legend>
-                <!-- Aplicación de la clase form-horizontal -->
                 <div class="form-horizontal">
                     <label for="codigo-epp">Código EPP:</label>
                     <input type="text" id="codigo-epp" required>
@@ -32,17 +30,14 @@
                 </div>
                 <p><strong>Nombre EPP:</strong> <span id="nombre-epp-lbl"></span></p>
                 <p><strong>Stock Disponible:</strong> <span id="stock-lbl"></span></p>
-                <!-- Aplicación de la clase form-horizontal -->
                 <div class="form-horizontal">
                     <label for="cantidad">Cantidad a entregar:</label>
                     <input type="number" id="cantidad" value="1" min="1">
                 </div>
-                <!-- Aplicación de la clase form-horizontal -->
                 <div class="form-horizontal">
                     <label for="motivo">Motivo:</label>
                     <textarea id="motivo" rows="3"></textarea>
                 </div>
-                <!-- Aplicación de la clase form-horizontal -->
                 <div class="form-horizontal">
                     <label for="aprobado-por">Aprobado por:</label>
                     <input type="text" id="aprobado-por" required>
@@ -58,7 +53,13 @@
                 <table id="historial-tabla">
                     <thead>
                         <tr>
-                            <th>Fecha</th><th>EPP</th><th>Cantidad</th><th>Motivo</th><th>Aprobado por</th>
+                            <th>Fecha</th>
+                            <th>EPP</th>
+                            <!-- CAMBIO VISUAL: Columna Marca agregada -->
+                            <th>Marca</th>
+                            <th>Cantidad</th>
+                            <th>Motivo</th>
+                            <th>Aprobado por</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -69,7 +70,6 @@
             </fieldset>
         </div>
     </div>
-    <!-- Aquí irá nuestro código JavaScript que le dará vida a la interfaz -->
     <script src="{{ url_for('static', filename='js/entregas.js') }}"></script>
 
 {% endblock %}

@@ -43,6 +43,7 @@ class EPP(Base):
     id = Column(Integer, primary_key=True, index=True)
     codigo = Column(String, unique=True, index=True)
     nombre = Column(String)
+    marca = Column(String, nullable=True) # <-- NUEVA COLUMNA (nullable=True evita errores con datos viejos)
     stock = Column(Integer)
     entregas = relationship("Entrega", back_populates="epp")
 

@@ -1,33 +1,33 @@
-// static/js/gestionEpp.js (Funcional)
+// static/js/gestionEpp.js (Modificado con persistencia local de Marca)
 
 document.addEventListener('DOMContentLoaded', (event) => {
     cargarEpp();
 });
 
-// --- FUNCIÓN MODIFICAR AHORA REDIRIGE A LA PÁGINA DE EDICIÓN ---
 function modificarEpp(eppId) {
-    // Redirige al usuario a la URL de edición que maneja routes.py
     window.location.href = `/gestion-epp/editar/${eppId}`; 
 }
 
 async function cargarEpp() {
-    // URL Corregida: /api/epp/list
     const response = await fetch('/api/epp/list');
     const eppList = await response.json();
     const tbody = document.querySelector('#epp-tabla tbody');
-    tbody.innerHTML = ''; // Limpiar tabla
+    tbody.innerHTML = ''; 
 
     eppList.forEach(item => {
         const row = tbody.insertRow();
         row.insertCell(0).textContent = item.codigo;
         row.insertCell(1).textContent = item.nombre;
-        row.insertCell(2).textContent = item.stock;
         
-        // --- CAMBIO AQUÍ: Botón Modificar ---
-        const actionsCell = row.insertCell(3);
+        // CAMBIO LOCAL: Recuperamos la marca desde el localStorage usando el código como clave
+        const marcaLocal = localStorage.getItem(`marca_${item.codigo}`) || 'Sin especificar';
+        row.insertCell(2).textContent = marcaLocal;
+        
+        row.insertCell(3).textContent = item.stock;
+        
+        const actionsCell = row.insertCell(4); // Desplazado al índice 4 por la nueva columna
         const modBtn = document.createElement('button');
         modBtn.textContent = 'Modificar';
-        // Solo pasamos el ID a la función
         modBtn.onclick = () => modificarEpp(item.id); 
         actionsCell.appendChild(modBtn);
     });
@@ -36,51 +36,38 @@ async function cargarEpp() {
 async function añadirEpp() {
     const codigo = document.getElementById('codigo').value;
     const nombre = document.getElementById('nombre').value;
+    const marca = document.getElementById('marca').value; // Capturamos la marca de la UI
     const stock = document.getElementById('stock').value;
 
-    if (!codigo || !nombre || !stock) {
+    if (!codigo || !nombre || !marca || !stock) {
         alert("Complete todos los campos.");
         return;
     }
 
-    // URL Corregida: /api/epp/add
     const response = await fetch('/api/epp/add', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ codigo, nombre, stock: parseInt(stock) }),
+        body: JSON.stringify({ codigo, nombre, stock: parseInt(stock) }), // La API recibe lo mismo (BD intacta)
     });
     const data = await response.json();
 
     if (data.status === 'ok') {
+        // CAMBIO LOCAL: Si el servidor aceptó el registro, guardamos la marca en el localStorage
+        localStorage.setItem(`marca_${codigo}`, marca);
+        localStorage.setItem(`nombre_${codigo}`, nombre);
+
+
         alert(data.mensaje);
-        cargarEpp(); // Recargar la tabla
-        // Limpiar formulario
+        cargarEpp(); 
+        
+        // Limpiar formulario completo
         document.getElementById('codigo').value = '';
         document.getElementById('nombre').value = '';
+        document.getElementById('marca').value = '';
         document.getElementById('stock').value = '';
     } else {
         alert(`Error: ${data.mensaje}`);
     }
-}
-
-// La función eliminarEpp comentada se mantiene por si la necesitas más adelante.
-/*
-async function eliminarEpp(eppId) {
-    if (!confirm("¿Está seguro de eliminar este EPP?")) {
-        return;
     }
-    const response = await fetch(`/api/epp/delete/${eppId}`, {
-        method: 'DELETE',
-    });
-    const data = await response.json();
-
-    if (data.status === 'ok') {
-        alert(data.mensaje);
-        cargarEpp();
-    } else {
-        alert(`Error: ${data.mensaje}`);
-    }
-}
-*/
